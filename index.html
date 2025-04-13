@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>🌐 公開照片牆</title>
+  <style>
+    body { font-family: sans-serif; background: #f0f0f0; text-align: center; }
+    input, button { padding: 10px; margin: 5px; font-size: 16px; }
+    .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 20px; }
+    .gallery img { width: 200px; border-radius: 6px; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
+  </style>
+</head>
+<body>
+  <h1>📸 公開照片牆</h1>
+  <input type="text" id="photoURL" placeholder="貼上圖片網址">
+  <button onclick="submitPhoto()">新增圖片</button>
+
+  <div class="gallery" id="gallery"></div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/你的網址/exec";
+
+    function loadPhotos() {
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(data => {
+          const gallery = document.getElementById('gallery');
+          gallery.innerHTML = '';
+          data.reverse().forEach(url => {
+            const img = document.createElement('img');
+            img.src = url;
+            gallery.appendChild(img);
+          });
+        });
+    }
+
+    function submitPhoto() {
+      const url = document.getElementById('photoURL').value;
+      if (url.trim() === '') return alert('請輸入圖片網址');
+
+      fetch(API_URL + '?url=' + encodeURIComponent(url), { method: 'POST' })
+        .then(() => {
+          document.getElementById('photoURL').value = '';
+          loadPhotos();
+        });
+    }
+
+    // 初次載入
+    loadPhotos();
+  </script>
+</body>
+</html>
